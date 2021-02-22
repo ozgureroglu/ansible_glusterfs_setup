@@ -1,0 +1,12 @@
+# Which disk will be used as brick 
+dev: sdb
+gluster_brick_name: gvol0
+gluster_brick_dir: /glusterfs/{{gluster_brick_name}}
+gluster_mount_dir: /mnt/glusterfs
+
+
+gluster_brick_config:
+  "replica 3 transport tcp
+  {{ groups.glusternodes[0] }}:{{ gluster_brick_dir }}
+  {{ groups.glusternodes[1] }}:{{ gluster_brick_dir }}
+  {{ groups.glusternodes[2] }}:{{ gluster_brick_dir }}"
