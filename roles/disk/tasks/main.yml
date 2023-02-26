@@ -1,21 +1,48 @@
 ---
-# Check /dev/sdb block and mount it under /glusterfs
 
 - block:
-  - name: Create list of mounted devices
-    set_fact:
-      mounted_devices: "{{ ansible_mounts|json_query('[].device') }}"
-  - name: Create File System
-    filesystem:
-      fstype: ext4
-      dev: "{{ mount_src }}"
-    when: mount_src not in mounted_devices
-  - name: Mount File System
-    mount:
-      path: "{{ mount_path }}"
-      src: "{{ mount_src }}"
-      fstype: ext4
-      state: mounted
-    when: mount_src not in mounted_devices
+  - name: create partition
+    parted:
+      device: "{{ lvm_device_name }}"
+      number: 1
+      flags: [ lvm ]
+      state: present
+      
 
-...
+  - name: Install lvm2 dependency
+    package:
+      name: lvm2
+      state: present
+
+  - name: task for creating volume group
+    lvg:
+        vg: glusterfs-vg
+        pvs: "{{ lvm_device_name }}1"
+        pesize: 16
+
+  - name: task for creating logical volume
+    lvol:
+        vg: glusterfs-vg
+        lv:  glusterfs-lv
+        size: 100%FREE
+        force: yes
+
+  - name: Create directory data1 if does not exist
+    file:
+      path: /glusterfs
+      state: directory
+      mode: '0755'
+
+  - name: format the xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/glusterfs-vg/glusterfs-lv
+
+  - name: mount the lv on /glusterfs
+    mount:
+      path: /glusterfs
+      src: /dev/glusterfs-vg/glusterfs-lv
+      fstype: xfs
+      state: mounted
+
+

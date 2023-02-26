@@ -7,6 +7,11 @@
       name: glusterfs-server
       update_cache: yes
 
+  - name: Update repositories cache and install "glusterfs-client" package
+    apt:
+      name: glusterfs-client
+      update_cache: yes
+
   - name: Enable service glusterd and ensure it is not masked
     ansible.builtin.systemd:
       name: glusterd

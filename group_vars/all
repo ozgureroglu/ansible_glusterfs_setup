@@ -12,5 +12,5 @@ os_minimum_versions:
   Ubuntu: 16.04
   Debian: 9
 
-mount_src: /dev/sdb
+lvm_device_name: /dev/sdb
 mount_path: /glusterfs

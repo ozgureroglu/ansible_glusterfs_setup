@@ -5,4 +5,8 @@ This project deploys a glusterfs cluster.
   ```
   ansible-galaxy collection install community.general
   ```
-*
+
+
+```
+ansible-playbook -i hosts glusterfs.yml 
+```
